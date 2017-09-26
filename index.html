@@ -3,12 +3,15 @@
   <head>
     <title>Chat app</title>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var socket = io();
-    </script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <script src="public/js/main.js"></script>
   </head>
   <body>
     <h2>Hello there!</h2>
     <p>Welcome to the best chat app on the planet!</p>
+    <input id="text-input" type='text' placeholder="Say something..."/>
+    <button id="send-button">Send</button>
+    <div id='message-container'>
+    </div>
   </body>
 </html>
