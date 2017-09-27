@@ -7,11 +7,19 @@
     <script src="public/js/main.js"></script>
   </head>
   <body>
-    <h2>Hello there!</h2>
-    <p>Welcome to the best chat app on the planet!</p>
-    <input id="text-input" type='text' placeholder="Say something..."/>
-    <button id="send-button">Send</button>
-    <div id='message-container'>
+    <div id="name-container">
+      <label>Type your name
+        <input id="name-input" type='text'/>
+      </label>
+      <button id="enter-button">Enter</button>
+    </div>
+    <div id="chat-container" style="display: none">
+      <h2>Hello!</h2>
+      <p>This is the best chat app on the planet!</p>
+      <input id="text-input" type='text' placeholder="Say something..."/>
+      <button id="send-button">Send</button>
+      <div id='message-container'>
+      </div>
     </div>
   </body>
 </html>

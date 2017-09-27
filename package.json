@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/kpace/basic_chat_server#readme",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "express": "^4.15.5",
     "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.3"
