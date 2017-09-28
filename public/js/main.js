@@ -8,20 +8,10 @@ $(function(){
 
   $enterButton.click(function() {
     var inputValue = $nameInput.val();
-
     if (inputValue) {
-      $.ajax({
-        url: 'enter',
-        type: "POST",
-        data: JSON.stringify({
-          id: socket.id,
-          name: inputValue
-        }),
-        contentType: 'application/json'
-      })
-      .done(function() {
-        $('#name-container').hide();
-        $('#chat-container').show();
+      socket.emit('enter', {
+        id: socket.id,
+        name: inputValue
       });
     }
   });
@@ -32,6 +22,15 @@ $(function(){
       socket.emit('message sent', inputValue);
       $textInput.val('');
     }
+  });
+
+  socket.on('entered', function() {
+    $('#name-container').hide();
+    $('#chat-wrapper').show();
+  });
+
+  socket.on('user entered', function(name) {
+    $('#users').append($('<li>').text(name));
   });
 
   socket.on('message sent', function(data) {

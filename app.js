@@ -14,11 +14,6 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
-app.post('/enter', (req, res) => {
-  people[req.body.id] = req.body.name;
-  res.status(200).send();
-});
-
 io.on('connection', (socket) => {
   console.log(`A user with id ${socket.id} connected`);
 
@@ -28,6 +23,13 @@ io.on('connection', (socket) => {
       user: people[socket.id]
     });
   });
+
+  socket.on('enter', (user) => {
+    people[user.id] = user.name;
+
+    socket.emit('entered');
+    socket.broadcast.emit('user entered', user.name)
+  })
 
   socket.on('disconnect', () => {
     console.log(`A user with id ${socket.id} disconnected`);

@@ -5,6 +5,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
     <script src="public/js/main.js"></script>
+    <link rel="stylesheet" href="public/css/main.css">
   </head>
   <body>
     <div id="name-container">
@@ -13,12 +14,18 @@
       </label>
       <button id="enter-button">Enter</button>
     </div>
-    <div id="chat-container" style="display: none">
-      <h2>Hello!</h2>
-      <p>This is the best chat app on the planet!</p>
-      <input id="text-input" type='text' placeholder="Say something..."/>
-      <button id="send-button">Send</button>
-      <div id='message-container'>
+    <div id="chat-wrapper" class="wrapper" style="display: none">
+      <div id="chat-container">
+        <h2>Hello!</h2>
+        <p>This is the best chat app on the planet!</p>
+        <input id="text-input" type='text' placeholder="Say something..."/>
+        <button id="send-button">Send</button>
+        <div id='message-container'></div>
+      </div>
+      <div id="user-container">
+        <h3>Users online</h3>
+        <ul id="users">
+        </ul>
       </div>
     </div>
   </body>
