@@ -24,17 +24,35 @@ $(function(){
     }
   });
 
-  socket.on('entered', function() {
+  socket.on('entered', function(users) {
     $('#name-container').hide();
     $('#chat-wrapper').show();
+    refreshUsers(users);
   });
 
-  socket.on('user entered', function(name) {
-    $('#users').append($('<li>').text(name));
+  socket.on('user entered', function(users) {
+    refreshUsers(users);
   });
 
+  socket.on('user left', function(users) {
+    refreshUsers(users);
+  });
+ 
   socket.on('message sent', function(data) {
     var p = $('<p>').text(data.user + ' said: ' + data.message);
     $('#message-container').append(p);
   });
+
+  function refreshUsers(users) {
+    $('#users').html('');
+    Object.keys(users).forEach(function(key, index) {
+      var name;
+      name = users[key];
+      if (key === socket.id) {
+        name += ' (you)';
+      }
+
+      $('#users').append($('<li>').text(name));
+    });
+  }
 });

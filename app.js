@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 app.use('/public', express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 
-let people = {};
+let users = {};
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
@@ -20,21 +20,22 @@ io.on('connection', (socket) => {
   socket.on('message sent', (message) => {
     io.sockets.emit('message sent', {
       message,
-      user: people[socket.id]
+      user: users[socket.id]
     });
   });
 
   socket.on('enter', (user) => {
-    people[user.id] = user.name;
+    users[user.id] = user.name;
 
-    socket.emit('entered');
-    socket.broadcast.emit('user entered', user.name)
-  })
+    socket.emit('entered', users);
+    socket.broadcast.emit('user entered', users);
+  });
 
   socket.on('disconnect', () => {
     console.log(`A user with id ${socket.id} disconnected`);
 
-    delete people[socket.id];
+    delete users[socket.id];
+    socket.broadcast.emit('user left', users);
   });
 });
 
