@@ -1,10 +1,15 @@
 $(function(){
   var socket = io();
+
   var $textInput = $('#text-input');
   var $sendButton = $('#send-button');
 
   var $nameInput = $('#name-input');
   var $enterButton = $('#enter-button');
+
+  $nameInput.focus();
+  attachClickOnEnter($textInput, $sendButton);
+  attachClickOnEnter($nameInput, $enterButton);
 
   $enterButton.click(function() {
     var inputValue = $nameInput.val();
@@ -27,6 +32,7 @@ $(function(){
   socket.on('entered', function(users) {
     $('#name-container').hide();
     $('#chat-wrapper').show();
+    $textInput.focus();
     refreshUsers(users);
   });
 
@@ -42,6 +48,14 @@ $(function(){
     var p = $('<p>').text(data.user + ' said: ' + data.message);
     $('#message-container').append(p);
   });
+
+  function attachClickOnEnter($input, $button) {
+    $input.keyup(function(event) {
+      if(event.keyCode == 13) {
+          $button.click();
+      }
+    });
+  }
 
   function refreshUsers(users) {
     $('#users').html('');
