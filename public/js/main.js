@@ -45,7 +45,15 @@ $(function(){
   });
  
   socket.on('message sent', function(data) {
-    var p = $('<p>').text(data.user + ' said: ' + data.message);
+    var user = data.user;
+    var p = $('<p>');
+
+    if (user.id === socket.id) {
+      p.text('You said: ' + data.message).addClass('italic');
+    } else {
+      p.text(user.name + ' said: ' + data.message);
+    }
+
     $('#message-container').append(p);
   });
 
@@ -64,9 +72,10 @@ $(function(){
       name = users[key];
       if (key === socket.id) {
         name += ' (you)';
+        $('#users').prepend($('<li>').text(name));
+      } else {
+        $('#users').append($('<li>').text(name));
       }
-
-      $('#users').append($('<li>').text(name));
     });
   }
 });

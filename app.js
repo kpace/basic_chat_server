@@ -15,9 +15,10 @@ io.on('connection', (socket) => {
   console.log(`A user with id ${socket.id} connected`);
 
   socket.on('message sent', (message) => {
+    // emit to all users that meessage is sent
     io.sockets.emit('message sent', {
       message,
-      user: users[socket.id]
+      user: {id: socket.id, name: users[socket.id]}
     });
   });
 
