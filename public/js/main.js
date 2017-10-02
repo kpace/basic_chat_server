@@ -23,7 +23,7 @@ $(function(){
   $sendButton.click(function() {
     var inputValue = $textInput.val();
     if (inputValue) {
-      socket.emit('message sent', inputValue);
+      socket.emit('send a message', inputValue);
       $textInput.val('');
     }
   });

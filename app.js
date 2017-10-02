@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log(`A user with id ${socket.id} connected`);
 
-  socket.on('message sent', (message) => {
+  socket.on('send a message', (message) => {
     // emit to all users a meessage is sent
     io.sockets.emit('message sent', {
       message,
