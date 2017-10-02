@@ -15,7 +15,7 @@ io.on('connection', (socket) => {
   console.log(`A user with id ${socket.id} connected`);
 
   socket.on('message sent', (message) => {
-    // emit to all users that meessage is sent
+    // emit to all users a meessage is sent
     io.sockets.emit('message sent', {
       message,
       user: {id: socket.id, name: users[socket.id]}
@@ -26,6 +26,7 @@ io.on('connection', (socket) => {
     users[socket.id] = user.name;
 
     socket.emit('entered', users);
+    // emit to all users but current a user has entered
     socket.broadcast.emit('user entered', users);
   });
 

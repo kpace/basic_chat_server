@@ -9,7 +9,7 @@ var options = {
 
 
 describe('Chat server', () => {
-  it('A user should receive all users on enter', (done) => {
+  it('A user should receive all connected users on enter', (done) => {
     let name1 = 'John';
     let name2 = 'Jenny';
 
@@ -20,6 +20,9 @@ describe('Chat server', () => {
       });
 
       user1.on('entered', (users) => {
+        users.should.have.property(user1.id, name1);
+        users.should.not.have.property(user2.id);
+
         let user2 = io.connect(socketURL, options);
         user2.on('connect', () => {
           user2.emit('enter', {
@@ -29,6 +32,9 @@ describe('Chat server', () => {
           user1.on('user entered', (users) => {
             users.should.have.property(user1.id, name1);
             users.should.have.property(user2.id, name2);
+
+            user1.disconnect();
+            user2.disconnect();
             done();
           });
         });
