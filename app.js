@@ -23,7 +23,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('enter', (user) => {
-    users[user.id] = user.name;
+    users[socket.id] = user.name;
 
     socket.emit('entered', users);
     socket.broadcast.emit('user entered', users);

@@ -15,7 +15,6 @@ $(function(){
     var inputValue = $nameInput.val();
     if (inputValue) {
       socket.emit('enter', {
-        id: socket.id,
         name: inputValue
       });
     }
