@@ -15,7 +15,10 @@ io.on('connection', (socket) => {
   console.log(`A user with id ${socket.id} connected`);
 
   socket.on('send a message', (message) => {
-    // emit to all users a meessage is sent
+    if(!socket.id in users) {
+      throw 'You should first enter your name';
+    }
+    // notify all users a meessage is sent
     io.sockets.emit('message sent', {
       message,
       user: {id: socket.id, name: users[socket.id]}
@@ -26,7 +29,7 @@ io.on('connection', (socket) => {
     users[socket.id] = user.name;
 
     socket.emit('entered', users);
-    // emit to all users but current a user has entered
+    // notify all users but current that a user has entered
     socket.broadcast.emit('user entered', users);
   });
 
