@@ -1,5 +1,6 @@
 const should = require('should');
 const io = require('socket.io-client');
+const server = require('../app');
 
 var socketURL = 'http://0.0.0.0:3000';
 var options = {
@@ -12,47 +13,61 @@ var connect = function() {
 };
 
 describe('Chat server', () => {
-  it('A user should be notified when new user connect', (done) => {
-    let name1 = 'John';
-    let name2 = 'Jenny';
+  before((done) => {
+    server.start();
+    done();
+  });
 
-    let user1 = connect();
-    user1.on('connect', () => {
-      user1.emit('enter', {
-        name: name1
+  after((done) => {
+    server.stop();
+    done();
+  });
+
+  let user1, user2, user3;
+  let name1 = 'John';
+  let name2 = 'Jenny';
+  let name3 = 'Jack';
+
+  beforeEach((done) => {
+    user1 = connect();
+    user2 = connect();
+    user3 = connect();
+    done();
+  });
+
+  afterEach((done) => {
+    user1.disconnect();
+    user2.disconnect();
+    user3.disconnect();
+    done();
+  });
+
+  it('A user should be notified when new user connect', (done) => {
+    user1.emit('enter', {
+      name: name1
+    });
+
+    user1.on('entered', (users) => {
+      users.should.have.property(user1.id, name1);
+      users.should.not.have.property(user2.id);
+
+      user2.emit('enter', {
+        name: name2
       });
 
-      user1.on('entered', (users) => {
-        let user2 = connect();
-
+      user1.on('user entered', (users) => {
         users.should.have.property(user1.id, name1);
-        users.should.not.have.property(user2.id);
+        users.should.have.property(user2.id, name2);
 
-        user2.on('connect', () => {
-          user2.emit('enter', {
-            name: name2
-          });
-
-          user1.on('user entered', (users) => {
-            users.should.have.property(user1.id, name1);
-            users.should.have.property(user2.id, name2);
-
-            user1.disconnect();
-            user2.disconnect();
-            done();
-          });
-        });
+        done();
       });
     });
   });
 
   it('All users should receive a message', (done) => {
-    let name1 = 'John';
-    let name2 = 'Jenny';
-    let name3 = 'Jack';
     let message = "Hello there!";
-
     let messageCount = 0;
+ 
     function checkMessage(client, senderId, senderName) {
       client.on('message sent', (data) => {
         data.should.have.property('user');
@@ -69,34 +84,25 @@ describe('Chat server', () => {
       });
     }
 
-    let user1 = connect();
-    user1.on('connect', () => {
-      user1.emit('enter', {
-        name: name1
+    user1.emit('enter', {
+      name: name1
+    });
+
+    user1.on('entered', () => {
+      checkMessage(user1, user1.id, name1);
+      user2.emit('enter', {
+        name: name2
       });
 
-      user1.on('entered', () => {
-        checkMessage(user1, user1.id, name1);
-        let user2 = connect();
-        user2.on('connect', () => {
-          user2.emit('enter', {
-            name: name2
-          });
+      user2.on('entered', () => {
+        checkMessage(user2, user1.id, name1);
+        user3.emit('enter', {
+          name: name3
+        });
 
-          user2.on('entered', () => {
-            checkMessage(user2, user1.id, name1);
-            let user3 = connect();
-            user3.on('connect', () => {
-              user3.emit('enter', {
-                name: name3
-              });
-
-              user3.on('entered', () => {
-                checkMessage(user3, user1.id, name1);
-                user1.emit('send a message', message);
-              });
-            });
-          });
+        user3.on('entered', () => {
+          checkMessage(user3, user1.id, name1);
+          user1.emit('send a message', message);
         });
       });
     });

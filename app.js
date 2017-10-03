@@ -12,8 +12,6 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log(`A user with id ${socket.id} connected`);
-
   socket.on('send a message', (message) => {
     if(!socket.id in users) {
       throw 'You should first enter your name';
@@ -38,13 +36,28 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log(`A user with id ${socket.id} disconnected`);
-
     delete users[socket.id];
     socket.broadcast.emit('user left', users);
   });
 });
 
-server.listen(3000, () => {
-  console.log('Listening on port 3000...');
-});
+if (require.main === module) {
+  start();
+}
+
+function start(port=3000, callback) {
+  server.listen(port, () => {
+    if (callback) {
+      callback();
+    }
+  });
+}
+
+function stop() {
+  io.close();
+}
+
+module.exports = {
+  start: start,
+  stop: stop
+};
