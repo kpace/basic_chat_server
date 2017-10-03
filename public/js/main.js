@@ -7,6 +7,8 @@ $(function(){
   var $nameInput = $('#name-input');
   var $enterButton = $('#enter-button');
 
+  var timerId;
+
   $nameInput.focus();
   attachClickOnEnter($textInput, $sendButton);
   attachClickOnEnter($nameInput, $enterButton);
@@ -28,6 +30,10 @@ $(function(){
     }
   });
 
+  $textInput.on('input', function() {
+    socket.emit('typing');
+  });
+
   socket.on('entered', function(users) {
     $('#name-container').hide();
     $('#chat-wrapper').show();
@@ -45,6 +51,7 @@ $(function(){
  
   socket.on('message sent', function(data) {
     var user = data.user;
+    var $messageContainer = $('#message-container');
     var p = $('<p>');
 
     if (user.id === socket.id) {
@@ -53,7 +60,25 @@ $(function(){
       p.text(user.name + ' said: ' + data.message);
     }
 
-    $('#message-container').append(p);
+    $messageContainer.append(p);
+    $messageContainer[0].scrollTop = $messageContainer[0].scrollHeight;
+  });
+
+  socket.on('typing', (user) => {
+    var $typingIndicator = $('#typing-indicator');
+    $typingIndicator.text(user + ' is typing...');
+
+    if($typingIndicator.css('opacity') !== '1') {
+      $typingIndicator.css({opacity: 1});
+    }
+
+    if(timerId) {
+      clearInterval(timerId);
+      timerId = undefined;
+    }
+    timerId = setTimeout(function() {
+      $typingIndicator.css({opacity: 0});
+    }, 600);
   });
 
   function attachClickOnEnter($input, $button) {

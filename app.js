@@ -33,6 +33,10 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('user entered', users);
   });
 
+  socket.on('typing', () => {
+    socket.broadcast.emit('typing', users[socket.id]);
+  });
+
   socket.on('disconnect', () => {
     console.log(`A user with id ${socket.id} disconnected`);
 
