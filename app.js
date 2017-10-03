@@ -25,13 +25,14 @@ io.on('connection', (socket) => {
 
   socket.on('enter', (user) => {
     users[socket.id] = user.name;
-
     socket.emit('entered', users);
+
     // notify all users but current that a user has entered
     socket.broadcast.emit('user entered', users);
   });
 
   socket.on('typing', () => {
+    // notify all users but current that a user is typing
     socket.broadcast.emit('typing', users[socket.id]);
   });
 
