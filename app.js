@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
     socket.emit('entered', users);
 
     // notify all users but current that a user has entered
-    socket.broadcast.emit('user entered', users);
+    socket.broadcast.emit('user entered', user, users);
   });
 
   socket.on('typing', () => {
@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
 });
 
 if (require.main === module) {
-  start();
+  start(3000, () => console.log('Listening on port 3000...'));
 }
 
 function start(port=3000, callback) {

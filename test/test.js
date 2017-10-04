@@ -2,19 +2,20 @@ const should = require('should');
 const io = require('socket.io-client');
 const server = require('../app');
 
-var socketURL = 'http://0.0.0.0:3000';
-var options = {
+const PORT = 3333;
+const socketURL = 'http://0.0.0.0:' + PORT.toString();
+const options = {
   transports: ['websocket'],
   'force new connection': true
 };
 
-var connect = function() {
+const connect = function() {
   return io.connect(socketURL, options);
 };
 
-describe('Chat server', () => {
+describe('Testing Chat server', () => {
   before((done) => {
-    server.start();
+    server.start(PORT);
     done();
   });
 
@@ -24,9 +25,9 @@ describe('Chat server', () => {
   });
 
   let user1, user2, user3;
-  let name1 = 'John';
-  let name2 = 'Jenny';
-  let name3 = 'Jack';
+  const name1 = 'John';
+  const name2 = 'Jenny';
+  const name3 = 'Jack';
 
   beforeEach((done) => {
     user1 = connect();
@@ -42,30 +43,53 @@ describe('Chat server', () => {
     done();
   });
 
-  it('A user should be notified when new user connects', (done) => {
+  it('All users should be notified when a new user connects', (done) => {
     user1.emit('enter', {
       name: name1
     });
 
-    user1.on('entered', (users) => {
-      users.should.have.property(user1.id, name1);
-      users.should.not.have.property(user2.id);
-
+    user1.on('entered', () => {
       user2.emit('enter', {
         name: name2
       });
 
-      user1.on('user entered', (users) => {
-        users.should.have.property(user1.id, name1);
-        users.should.have.property(user2.id, name2);
+      user2.on('entered', () => {
+        let user1Notified = false, user2Notified = false;
 
-        done();
+        user1.on('user entered', (user, users) => {
+          if (user.name === name3) {
+            user1Notified = true;
+          }
+          checkUserEntered(user, users);
+        });
+        user2.on('user entered', (user, users) => {
+          if (user.name === name3) {
+            user2Notified = true;
+          }
+          checkUserEntered(user, users);
+        });
+
+        function checkUserEntered(enteredUser, users) {
+          if (enteredUser.name === name3) {
+            users.should.have.property(user1.id, name1);
+            users.should.have.property(user2.id, name2);
+            users.should.have.property(user3.id, name3);
+
+            if (user1Notified && user2Notified) {
+              console.log('calling done');
+              done();
+            }
+          }
+        }
+        user3.emit('enter', {
+          name: name3
+        });
       });
     });
   });
 
   it('All users should receive a message', (done) => {
-    let message = "Hello there!";
+    const message = "Hello there!";
     let messageCount = 0;
  
     function checkMessage(client, senderId, senderName) {

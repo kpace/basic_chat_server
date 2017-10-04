@@ -4,7 +4,7 @@
 ```
 $ cd basic_chat_server
 $ npm install
-$ npm start 
+$ npm start
 ```
 
-Run tests: `npm test`
+Run tests with: `npm test`

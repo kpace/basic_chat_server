@@ -41,7 +41,7 @@ $(function(){
     refreshUsers(users);
   });
 
-  socket.on('user entered', function(users) {
+  socket.on('user entered', function(user, users) {
     refreshUsers(users);
   });
 
